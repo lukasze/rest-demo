@@ -20,11 +20,6 @@ public class PersonController {
         return personRepository.findAll();
     }
 
-    /*
-        TODO 1 Run the application the test your app's Get/Post endpoints it with Swagger
-
-        TODO 2 Check with ChatGPT the role of @RequestBody annotation
-     */
     @PostMapping("/people")
     public Person savePerson(@RequestBody Person newPerson) {
         Person savedPerson = personRepository.save(newPerson);

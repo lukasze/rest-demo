@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Person Manager</title>
+</head>
+<body>
+
+<!-- Form to Add New Person -->
+<h3>Add New Person</h3>
+<form id="personForm">
+    <label>Name: </label><input type="text" id="name"><br><br>
+    <label>Age: </label><input type="number" id="age"><br><br>
+    <label>Address: </label><input type="text" id="address"><br><br>
+    <button type="button" onclick="addPerson()">Add Person</button>
+</form>
+
+<!-- Table to Display all saved people -->
+<h3>All People</h3>
+<table border="1" id="peopleTable">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Age</th>
+        <th>Address</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!-- JavaScript will insert the data here -->
+    </tbody>
+</table>
+
+<script>
+    async function fetchPeople() {
+        try {
+            let response = await fetch('/people');
+            let data = await response.json();
+
+            const tableBody = document.getElementById('peopleTable').getElementsByTagName('tbody')[0];
+            tableBody.innerHTML = '';  // Clear existing rows
+
+            data.forEach(person => {
+                let newRow = tableBody.insertRow();
+                newRow.insertCell(0).textContent = person.id;
+                newRow.insertCell(1).textContent = person.name;
+                newRow.insertCell(2).textContent = person.age;
+                newRow.insertCell(3).textContent = person.address;
+            });
+        } catch (error) {
+            console.error("Error fetching people:", error);
+        }
+    }
+
+    async function addPerson() {
+        try {
+            const personData = {
+                name: document.getElementById('name').value,
+                age: parseInt(document.getElementById('age').value),
+                address: document.getElementById('address').value
+            };
+
+            let response = await fetch('/people', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(personData)
+            });
+
+            let savedPerson = await response.json();
+
+            // Optional: You can do something with savedPerson if needed.
+
+            // Clear the form
+            document.getElementById('personForm').reset();
+
+            // Fetch the updated list of people
+            await fetchPeople();
+        } catch (error) {
+            console.error("Error adding person:", error);
+        }
+    }
+
+    // Fetch the initial list of people when page loads
+    window.onload = fetchPeople;
+</script>
+
+
+</body>
+</html>
